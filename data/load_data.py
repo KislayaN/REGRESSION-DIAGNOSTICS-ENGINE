@@ -19,6 +19,9 @@ class Load_data:
         self.path = path
         self.target = target
         
+        self.y_df = self.dataframe[target]
+        self.X_df = self.dataframe.drop(columns=[target])
+        
         self.y = self.dataframe[target].values
         self.X = self.dataframe.drop(columns=[target]).values
         
