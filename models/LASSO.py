@@ -1,7 +1,7 @@
 import numpy as np
 
 class Lasso:
-    def __init__(self, fit_intercept=True, alpha=0.001, epochs=None, tol=1e-6):
+    def __init__(self, fit_intercept=True, alpha=0.001, epochs=1000, tol=1e-6):
         self.fit_intercept = fit_intercept
         self.n_iter = epochs
         self.leaning_rate = alpha
@@ -49,4 +49,3 @@ class Lasso:
         prediction = X_val @ self.weights if self.fit_intercept else X_val @ self.weights
         
         return prediction
-        

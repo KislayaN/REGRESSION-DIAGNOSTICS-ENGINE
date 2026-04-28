@@ -3,10 +3,9 @@
 import numpy as np
 
 class OLS_Grad:
-    def __init__(self, epochs=None, learning_rate=None, tol=1e-6, fit_intercept=False):
+    def __init__(self, epochs=1000, learning_rate=0.001, tol=1e-6, fit_intercept=False):
         self.n_iter = epochs
         self.learning_rate = learning_rate
-        self.intercept_added = False
         self.weights = None
         self.cost_history = []
         self.tol = tol
@@ -20,11 +19,7 @@ class OLS_Grad:
         X_val = X.values if hasattr(X, 'values') else X
         y_val = y.values if hasattr(y, 'values') else y
         
-        if self.fit_intercept:
-            return X_val
-        else: 
-            X_val = self._add_intercept(X_val)
-            self.intercept_added = True
+        X_val = self._add_intercept(X_val) if self.fit_intercept else X_val
             
         n, p = X_val.shape
         self.weights = np.zeros(p)
@@ -49,13 +44,13 @@ class OLS_Grad:
             self.weights -= self.learning_rate * del_J
             
         if self.fit_intercept:
-            self.betas = self.weights
+            self.weights = self.weights
             self.intercept = self.weights[0]
             self.coefficients = self.weights[1: ]
         else:
             self.intercept = 0.0
             self.coefficients = self.weights
-            self.betas = self.coefficients
+            self.weights = self.coefficients
             
     def predict(self, X):
         if self.weights is None:

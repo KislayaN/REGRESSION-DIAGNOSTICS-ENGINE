@@ -2,7 +2,7 @@ from sklearn.linear_model import LinearRegression
 
 import numpy as np
 
-class LinearRegression:
+class _LinearRegression:
     def __init__(self, fit_intercept=True):
         self.model = LinearRegression(fit_intercept=fit_intercept)
         

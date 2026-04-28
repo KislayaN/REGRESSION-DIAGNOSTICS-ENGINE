@@ -30,8 +30,10 @@ class Ridge:
             
     def predict(self, X):
         X_val = X.values if hasattr(X, 'values') else X
+        
+        X_val = self._add_intercept(X_val) if self.fit_intercept else X_val
             
         if self.coefficients is not None:
-            preidction = X_val @ self.betas if self.fit_intercept else X_val @ self.coefficients
-            return preidction
+            prediction = X_val @ self.betas if self.fit_intercept else X_val @ self.coefficients
+            return prediction
         raise ValueError("run .fit() first")
