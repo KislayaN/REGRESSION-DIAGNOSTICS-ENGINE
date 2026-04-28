@@ -1,11 +1,10 @@
-import numpy as np
 import pandas as pd
 
 class Load_data:
     def __init__(self):
         self.data_loaded = False
         
-    def load_data(self, data, target, path):
+    def load_data(self, data, target, path=None):
         if data is not None:
             dataframe = data.copy()
         elif path is not None:
