@@ -22,7 +22,7 @@ class OLS:
             X_val = self._add_intercept(X_val) if self.fit_intercept else X_val
             self.intercept_added = True
         
-        betas = np.linalg.pinv(X_val.T @ X) @ X_val.T @ target_val
+        betas = np.linalg.pinv(X_val.T @ X_val) @ X_val.T @ target_val
         self.betas = np.asarray(betas).flatten()
         
         if self.fit_intercept:
@@ -38,3 +38,4 @@ class OLS:
         if self.coefficients is not None:
             prediction = X_val @ self.betas if self.fit_intercept else X_val @ self.coefficients
             return prediction
+        raise ValueError("run .fit() first")
