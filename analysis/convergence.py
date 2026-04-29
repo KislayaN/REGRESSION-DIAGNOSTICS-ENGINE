@@ -12,7 +12,7 @@ class Converge_insights:
             
         if cost_history_unscaled:
             if cost_history_unscaled[-1] > cost_history_scaled[-1]:
-                self.insights.append("Cost history improved convergence performance")
+                self.insights.append("Scaling improved convergence performance")
                 
         if any(cost > 1e6 for cost in cost_history_scaled):
             self.insights.append("Possible Divergence Detected (Learning rate too high)")
