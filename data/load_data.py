@@ -25,4 +25,6 @@ class Load_data:
         self.y = self.dataframe[target].values
         self.X = self.dataframe.drop(columns=[target]).values
         
+        self.feature_names = self.X_df.columns.to_list()
+        
         self.data_loaded = True
