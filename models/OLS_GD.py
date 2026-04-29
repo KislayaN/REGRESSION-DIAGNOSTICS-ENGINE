@@ -10,6 +10,7 @@ class OLS_Grad:
         self.cost_history = []
         self.tol = tol
         self.fit_intercept = fit_intercept
+        self.mse = self.cost_history[-1]
         
     def _add_intercept(self, X):
         self.intercept_added = True
