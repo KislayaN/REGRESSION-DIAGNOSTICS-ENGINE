@@ -37,10 +37,14 @@ class Correlation:
         insights = []
         corr = self.corr
         
-        for feature in corr:
-            if abs(corr[feature]) > 0.5 and abs(coeffs[feature]) < 0.01:
+        for index in corr.index:
+            # Index is the feature
+            if abs(corr[index]) > 0.5 and abs(coeffs[index]) < 0.01:
                 insights.append(
-                    f"{feature} strongly correlated but low coefficient -> possible multicollinearity"
+                    f"{index} strongly correlated but low coefficient -> possible multicollinearity"
                 )
+                
+        if insights == []:
+            return "No insights found"
         
         return insights
