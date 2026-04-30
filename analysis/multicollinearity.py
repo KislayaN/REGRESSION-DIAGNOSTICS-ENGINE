@@ -1,13 +1,20 @@
+import numpy as np
+import pandas as pd
+
 class Multicollinearity:
     def __init__(self):
         self.insights = []
         
     def analyze_multicollinearity(self, corr_matrix, threshold=0.9):
-        for i in range(len(corr_matrix)):
-            for j in range(i):
-                if abs(corr_matrix[i, j]) > threshold:
-                    feat_1 = corr_matrix.columns[i]
-                    feat_2 = corr_matrix.columns[j]
-                    self.insights.append(f"High Collinearity between {feat_1} and {feat_2}")
+        corr_matrix = abs(corr_matrix)
+        mask = np.triu(np.ones_like(corr_matrix, dtype='bool'), k = 1)
+        upper = corr_matrix.where(mask)
+        
+        pairs = upper.stack()
+        
+        strong_pairs = pairs[pairs > threshold]
+        pairs_index = [idx for idx in strong_pairs.index[0]]
+        self.insights.append(f"{pairs_index[0]} and {pairs_index[1]} are highly correlated with each other")
         
         return self.insights
+        
