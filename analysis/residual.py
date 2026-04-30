@@ -2,20 +2,17 @@ import numpy as np
 
 class Resid_insights:
     def __init__(self):
-        self.residuals = None
         self.insights = []
     
-    def analyze_residuals(self, y_true, y_pred):
-        self.residuals = y_true - y_pred
+    def analyze_residuals(self, residual_mean_dict):
         
-        resid_mean = np.mean(self.residuals)
+        for key, value in residual_mean_dict.items():
+            if abs(value) < 1e-3:
+                self.insights.append(f"Residuals are centered round zero for {key}")
+            else: 
+                self.insights.append(f"Residuals are biased (mean not zero) for {key}")
         
-        if abs(resid_mean) < 1e-3:
-            self.insights.append("Residual are centered around zero")
-        else: 
-            self.insights.append("Residuals are biased (mean not zero)")
+            if np.std(value) > 10:
+                self.insights.append(f"High variance present in {key}")
         
-        if np.std(self.residuals) > 10:
-            self.insights.append("High variance present in residuals")
-        
-        return self.residuals ,self.insights
+        return self.insights
