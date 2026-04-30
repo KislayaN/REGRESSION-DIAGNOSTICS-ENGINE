@@ -40,7 +40,14 @@ class Lasso:
             
             self.weights -= self.leaning_rate * del_J
             
-        return self.weights
+        if self.fit_intercept:
+            self.weights = self.weights
+            self.intercept = self.weights[0]
+            self.coefficients = self.weights[1: ]
+        else:
+            self.intercept = 0.0
+            self.coefficients = self.weights
+            self.weights = self.coefficients
             
     def predict(self, X):
         X_val = X.values if hasattr(X, 'values') else X

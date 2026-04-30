@@ -4,9 +4,10 @@ import sys
 import pandas as pd
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.abspath(os.path.join(current_dir, ".."))
 
-if current_dir not in sys.path:
-    sys.path.insert(0, current_dir, "..")
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
     
 from data.load_data import Load_data
 from helpers.validate import Validate
@@ -28,10 +29,16 @@ from analysis.convergence import Converge_insights
 from analysis.coefficients import Correlation
 from analysis.multicollinearity import Multicollinearity
 from analysis.sensitivity import Sensitivity
-# from visualization.convergence import Convergence_plot
+# Plotting classes
+from visualization.convergence import Convergence_plot
+from visualization.coefficients import Coefficient_plot
+from visualization.correlation import Correlation_plot
+from visualization.performance import Performance_plot
+from visualization.residuals import Residual_plot
+# from visualization.sensitivity import 
 
 class Analyzer: 
-    def __init__(self):
+    def __init__(self, show_plots = True):
         self.splitter = Splitter()
         self.preprocessor = Preprocessor(perform_scaling=True)
         self.metrics = Get_metrics()
@@ -41,6 +48,15 @@ class Analyzer:
         self.correlation = Correlation()
         self.multicollinearity = Multicollinearity()
         self.sensitivity = Sensitivity()
+        self.convergence_plot = Convergence_plot()
+        self.coefficient_plot = Coefficient_plot()
+        self.correlation_plot = Correlation_plot()
+        self.performance_plot = Performance_plot()
+        self.residuals_plot = Residual_plot()
+        self.is_fitted = False
+        self.results = None
+        self.model_results = None
+        self.show_plots = show_plots
     
     def run(self, data, target):
         # Load the data
@@ -52,7 +68,7 @@ class Analyzer:
         Sanity_Check(loader).check()
         
         # Train test split
-        X_train, X_test, y_train, y_test = self.splitter.split(self, loader.X_df, loader.y_df)
+        X_train, X_test, y_train, y_test = self.splitter.split(loader.X_df, loader.y_df)
         
         # Scaler 
         self.preprocessor.fit(X_train)
@@ -72,6 +88,13 @@ class Analyzer:
         lr.fit(X_train_scaled, y_train)
         ridge.fit(X_train_scaled, y_train)
         lasso.fit(X_train_scaled, y_train)
+        
+        coef_dict_unscaled_all_models = {}
+        coef_dict_unscaled_all_models['OLS'] = ols.coefficients
+        coef_dict_unscaled_all_models['OLS-GD'] = ols_gd.coefficients
+        coef_dict_unscaled_all_models['LASSO'] = lasso.coefficients
+        coef_dict_unscaled_all_models['RIDGE'] = ridge.coefficients
+        coef_dict_unscaled_all_models['LR'] = lr.coefficients
 
         # # Predicting
         y_pred_ols = ols.predict(X_test)
@@ -79,6 +102,34 @@ class Analyzer:
         y_pred_lasso = lasso.predict(X_test_scaled)
         y_pred_ridge = ridge.predict(X_test_scaled)
         y_pred_lr = lr.predict(X_test_scaled)
+        
+        self.model_results = {
+            "LinearRegression": {
+                "actual": y_test,
+                "predicted": y_pred_lr,
+                "residuals": y_test - y_pred_lr
+            },
+            "OLS": {
+                "actual": y_test,
+                "predicted": y_pred_ols,
+                "residuals": y_test - y_pred_ols
+            },
+            "GradientDescentOLS": {
+                "actual": y_test,
+                "predicted": y_pred_gd,
+                "residuals": y_test - y_pred_gd
+            },
+            "Lasso": {
+                "actual": y_test,
+                "predicted": y_pred_lasso,
+                "residuals": y_test - y_pred_lasso
+            },
+            "Ridge": {
+                "actual": y_test,
+                "predicted": y_pred_ridge,
+                "residuals": y_test - y_pred_ridge
+            }
+        }
 
         # MSE
         mse_ols_test = self.metrics.mse(y_test, y_pred_ols)
@@ -140,7 +191,7 @@ class Analyzer:
         
         # Coefficients
         coefficients_results, coefficients_insights = self.correlation.analyze_correlation(loader.dataframe, target)
-        coeff_series = pd.Series(ols.coefficients, index=loader.dataframe.feature_names) # we are taking OLS's coefficients for now
+        coeff_series = pd.Series(ols.coefficients, index=loader.feature_names) # we are taking OLS's coefficients for now
         coefficients_corr_insights = self.correlation.compare_corr_vs_coeff(coeffs=coeff_series) 
 
         # Multicollinearity
@@ -190,7 +241,8 @@ class Analyzer:
             'residuals': {
                 'values': {
                     'mean': mean_residuals_dict,
-                    'variance': variance_residuals_dict
+                    'variance': variance_residuals_dict,
+                    'residuals': residuals_dict
                 },
                 'insights': resid_insights
             },
@@ -204,7 +256,8 @@ class Analyzer:
             'coefficients': {
                 'values': {
                     'scaled': coef_scaled_data_dict,
-                    'unscaled': coef_unscaled_data_dict
+                    'unscaled': coef_unscaled_data_dict,
+                    'coef_dict_unscaled_all_models': coef_dict_unscaled_all_models
                 },
                 'insights': {
                     'coefficient-insights': coefficients_insights,
@@ -221,4 +274,51 @@ class Analyzer:
             }
         }
         
+        self.is_fitted = True
+        self.results = final_dict
         return final_dict
+    
+    def _check_fitted(self):
+        if not self.is_fitted:
+            raise RuntimeError("Analyzer has not been run. Call run() first.")
+    
+    def get_results(self):
+        self._check_fitted()
+        return self.results
+    
+    def plot(self):
+        self._check_fitted()
+        
+        # self.performance_plot.plot(
+        #     performance_analysis_result=self.results['metrics']['values']['mse']
+        # )
+        
+        # self.convergence_plot.plot(
+        #     convergence_history=self.results['convergence']['values']['cost-history-scaled'],
+        #     model_name='Gradient Descent'
+        # )
+        
+        # self.coefficient_plot.plot(
+        #     coef_dict=self.results['coefficients']['values']['coef_dict_unscaled_all_models']
+        # )
+        
+        # self.correlation_plot.plot(
+        #     corr_matrix=self.results['multicollinearity']['values']
+        # )
+        
+        # self.residuals_plot.plot(
+        #     self.model_results['OLS']['actual'], self.model_results['OLS']['predicted'], model_name="Linear Regression"
+        # )
+        
+        
+        
+from sklearn.datasets import fetch_california_housing
+
+housing = fetch_california_housing(as_frame=True)
+
+target = housing.frame.columns.to_list()[-1]
+data = housing.frame
+
+analyzer = Analyzer()
+analyzer.run(data, target)
+analyzer.plot()
