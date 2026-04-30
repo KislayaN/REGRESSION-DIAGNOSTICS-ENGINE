@@ -9,6 +9,7 @@ class OLS_Grad:
         self.tol = tol
         self.fit_intercept = fit_intercept
         self.mse = None
+        self.is_diverged = False
         
     def _add_intercept(self, X):
         self.intercept_added = True
@@ -32,7 +33,7 @@ class OLS_Grad:
             cost = (1/n) * np.sum(error ** 2)
             
             if not np.isfinite(cost):
-                print("Gradient Descent is Diverged")
+                self.is_diverged = True
                 break
             
             self.cost_history.append(cost)
