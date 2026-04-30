@@ -1,9 +1,7 @@
-# This is the OLS estimator (BLUE)
-
 import numpy as np
 
 class OLS:
-    def __init__(self, fit_intercept=False):
+    def __init__(self, fit_intercept=True):
         self.fit_intercept = fit_intercept
         self.intercept_added = False
     
