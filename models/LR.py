@@ -12,6 +12,9 @@ class _LinearRegression:
         
         self.model.fit(X, y)
         
+        self.coefficients = self.model.coef_
+        self.intercept = self.model.intercept_
+        
     def predict(self, X):
         predictions = self.model.predict(X)
         return predictions
