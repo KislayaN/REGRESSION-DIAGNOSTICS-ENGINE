@@ -1,16 +1,14 @@
-# This is the Gradient Descent version of the OLS
-
 import numpy as np
 
 class OLS_Grad:
-    def __init__(self, epochs=1000, learning_rate=0.001, tol=1e-6, fit_intercept=False):
+    def __init__(self, epochs=1000, learning_rate=0.001, tol=1e-6, fit_intercept=True):
         self.n_iter = epochs
         self.learning_rate = learning_rate
         self.weights = None
         self.cost_history = []
         self.tol = tol
         self.fit_intercept = fit_intercept
-        self.mse = self.cost_history[-1]
+        self.mse = None
         
     def _add_intercept(self, X):
         self.intercept_added = True
@@ -27,10 +25,16 @@ class OLS_Grad:
         y = np.asarray(y_val).reshape(-1)
         
         for epoch in range(self.n_iter):
+            self.max_epochs = epoch
             prediction = X_val @ self.weights
             error = prediction - y
             
             cost = (1/n) * np.sum(error ** 2)
+            
+            if not np.isfinite(cost):
+                print("Gradient Descent is Diverged")
+                break
+            
             self.cost_history.append(cost)
             
             # J = (1/n) * (((X_b @ self.weights) - y) ** 2) --------
@@ -43,6 +47,7 @@ class OLS_Grad:
                 break
             
             self.weights -= self.learning_rate * del_J
+        self.mse = self.cost_history[-1]
             
         if self.fit_intercept:
             self.weights = self.weights
