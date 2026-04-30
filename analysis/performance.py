@@ -12,18 +12,38 @@ from evaluation_metrics.metrics import Get_metrics
 class Performance:
     def __init__(self):
         self.get_metrics = Get_metrics()
-        self.results = {}
+        self.insights = []
         
-    def compare_mse(self, y_true, predictions_dict):
+    def compare_mse(self, mse_dict):
         """
-        predictions_dict = {
-            "ols":y_pred_ols,
-            "gd":y_pred_gd,
-            "lasso":y_pred_lasso,
-            "ridge":y_pred_ridge,
-            "lr":y_pred_lr
+        mse_dict = {
+            "ols":mse_ols,
+            "gd":mse_gd,
+            "lasso":mse_lasso,
+            "ridge":mse_ridge,
+            "lr":mse_lr
         }
         """
-        for name, y_pred in predictions_dict.items():
-            self.results[name] = self.get_metrics.mse(y_true, y_pred)
-        return self.results
+        min_val = min(mse_dict.values())
+        key_min_val = [k for k, v in mse_dict.items() if v == min_val]
+        
+        self.insights.append(f"The minimum mse value is {min_val:.5f} for {key_min_val}")
+        
+        return self.insights
+    
+    def compare_r2(self, r2_dict):
+        """
+        r2_dict = {
+            "ols":r2_ols,
+            "gd":r2_gd,
+            "lasso":r2_lasso,
+            "ridge":r2_ridge,
+            "lr":r2_lr
+        }
+        """
+        max_val = max(r2_dict.values())
+        key_max_val = [k for k, v in r2_dict.items() if v == max_val]
+        
+        self.insights.append(f"{key_max_val} captures the most variance {max_val:.5f}")
+        
+        return self.insights
