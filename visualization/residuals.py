@@ -4,11 +4,14 @@ class Residual_plot:
     def __init__(self):
         pass
     
-    def plot(self, y_test, y_pred):
+    def plot(self, y_test, y_pred, model_name=None):
+        if model_name is None:
+            raise ValueError("model_name can not be none")
+        
         residual = y_test - y_pred
-        plt.scatter(y_pred, residual, color='blue', alpha=0.5)
+        plt.scatter(y_pred, residual, alpha=0.5)
         plt.axhline(y=0, color='red', linestyle='--')
-        plt.title('Residual Plot (Predicted vs Residuals)')
+        plt.title(f'Residual Plot (Predicted vs Residuals) for {model_name}')
         plt.xlabel('Predicted Values')
         plt.ylabel('Residuals')
         plt.grid(True, alpha=0.3)

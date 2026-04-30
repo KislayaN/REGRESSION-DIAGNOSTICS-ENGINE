@@ -1,22 +1,13 @@
-import os
-import sys
 import matplotlib.pyplot as plt
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.abspath(os.path.join(current_dir, ".."))
-
-if project_root not in sys.path:
-    sys.path.insert(0, project_root)
-    
-from analysis.performance import Performance
-
 class Performance_plot:
-    def __init__(self, performance_analysis_result):
-        self.perf_result = performance_analysis_result
+    def __init__(self):
+        self.perf_result = None
         
-    def plot(self):
-        models = self.perf_result.keys()
-        mse_vals = self.perf_result.values()
+    def plot(self, performance_analysis_result):
+        self.performance_result = performance_analysis_result
+        models = self.performance_result.keys()
+        mse_vals = self.performance_result.values()
         
         plt.figure(figsize=(10, 6))
         bars = plt.bar(models, mse_vals, color=['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd'])
