@@ -1,12 +1,11 @@
 import numpy as np
-import pandas as pd
 
 class Sanity_Check:
     def __init__(self, loader):
         self.warnings = []
         self.loader = loader
         
-    def sanity_check(self):
+    def check(self):
         self.y = self.loader.y_df
         self.X = self.loader.X_df
         self.dataframe = self.loader.dataframe
