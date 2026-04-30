@@ -10,13 +10,10 @@ class Convergence_plot:
     def plot(self, convergence_history):
         self.cost_history = convergence_history
         
-        plt.plot(convergence_history, label=f"Convergence over epochs {self.model_obj.n_iter} for {self.model_name}")
+        plt.plot(self.cost_history, label=f"Convergence over {self.model_obj.n_iter} epochs for {self.model_name}")
         plt.xlabel('Iterations')
-        plt.xlim(self.model_name.n_iter)
         plt.ylabel('MSE')
-        plt.yscale('log')
+        plt.xlim(0, self.model_obj.max_epochs)
         plt.legend()
         plt.grid(alpha=0.5)
         plt.show()
-        
-hist = Convergence_plot()
