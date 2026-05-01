@@ -13,8 +13,6 @@ class Sensitivity_plot:
         scaled_data_cost = next(self.iterator)
         unscaled_data_cost = next(self.iterator)
         
-        print(scaled_data_cost)
-        
         plt.plot(scaled_data_cost[1], label="Cost History for scaled data")
         plt.plot(unscaled_data_cost[1], label="Cost History for unscaled data")
         plt.legend()

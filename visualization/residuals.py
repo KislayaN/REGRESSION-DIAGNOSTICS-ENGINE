@@ -5,11 +5,12 @@ class Residual_plot:
         pass
     
     def plot(self, y_test=None, y_pred=None, model_name=None):
-        if y_test or y_pred is None:
-            raise ValueError("y_test or y_pred can not be none")
-        else: 
-            if y_test and y_pred is None:
-                raise ValueError("y_test or y_pred can not be none")
+        if y_pred is None and y_test is None:
+            raise ValueError("at least one parameter in (y_test, y_pred) is none")
+        
+        if y_pred is None and y_test is None:
+            raise ValueError("y_test and y_pred can not be none")
+
         if model_name is None:
             raise ValueError("model_name can not be none")
         
