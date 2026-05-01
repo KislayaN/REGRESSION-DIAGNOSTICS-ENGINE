@@ -13,7 +13,7 @@ class Multicollinearity:
         pairs = upper.stack()
         
         strong_pairs = pairs[pairs > threshold]
-        if strong_pairs == []:
+        if strong_pairs.empty:
             raise ValueError("Try reducing threhold, there are no features above this threshold")
         
         pairs_index = [idx for idx in strong_pairs.index[0]]
