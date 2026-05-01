@@ -35,7 +35,7 @@ from visualization.coefficients import Coefficient_plot
 from visualization.correlation import Correlation_plot
 from visualization.performance import Performance_plot
 from visualization.residuals import Residual_plot
-# from visualization.sensitivity import 
+from visualization.sensitivity import Sensitivity_plot
 
 class Analyzer: 
     def __init__(self, show_plots = True):
@@ -53,9 +53,11 @@ class Analyzer:
         self.correlation_plot = Correlation_plot()
         self.performance_plot = Performance_plot()
         self.residuals_plot = Residual_plot()
+        self.sensitivity_plot = Sensitivity_plot()
         self.is_fitted = False
         self.results = None
         self.model_results = None
+        self.mse_gd = None
         self.show_plots = show_plots
     
     def run(self, data, target):
@@ -179,14 +181,18 @@ class Analyzer:
         resid_insights = self.residuals.analyze_residuals(mean_residuals_dict)
 
         # # Convergence 
-        cost_history_scaled_gd = ols_gd.cost_history
         ols_gd_unscaled = OLS_Grad(fit_intercept=True, learning_rate=0.01)
         ols_gd_unscaled.fit(X_train, y_train)
-        cost_history_unscaled_gd = ols_gd_unscaled.cost_history
+        
+        self.mse_gd = {
+            'scaled-data-mse': ols_gd.cost_history,
+            'unscaled-data-mse': ols_gd_unscaled.cost_history
+        }
+        
         # Convergence Analysis
         convergence_insights = self.convergence.analyze_convergence(
-            cost_history_scaled=cost_history_scaled_gd,
-            cost_history_unscaled=cost_history_unscaled_gd
+            cost_history_scaled=ols_gd.cost_history,
+            cost_history_unscaled=ols_gd_unscaled.cost_history
         )
         
         # Coefficients
@@ -201,12 +207,12 @@ class Analyzer:
         # Sensitivity 
         coef_scaled_data_dict = dict(zip(loader.feature_names, ols_gd.coefficients))
         coef_unscaled_data_dict = dict(zip(loader.feature_names, ols_gd_unscaled.coefficients))
-        sensi_dict = {
+        top_feat_dict = {
             'unscaled': coef_unscaled_data_dict,
             'scaled': coef_scaled_data_dict
         }
         # Analysis
-        strong_features = self.sensitivity.check_coefficients(coefficients_dict=sensi_dict, top_features=3)
+        strong_features = self.sensitivity.check_coefficients(coefficients_dict=top_feat_dict, top_features=3)
 
         all_insights = []
 
@@ -248,8 +254,8 @@ class Analyzer:
             },
             'convergence': {
                 'values': {
-                    'cost-history-scaled': cost_history_scaled_gd,
-                    'cost-history-unscaled': cost_history_unscaled_gd
+                    'cost-history-scaled': ols_gd.cost_history,
+                    'cost-history-unscaled': ols_gd_unscaled.cost_history
                 },
                 'insights': convergence_insights
             },
@@ -257,7 +263,7 @@ class Analyzer:
                 'values': {
                     'scaled': coef_scaled_data_dict,
                     'unscaled': coef_unscaled_data_dict,
-                    'coef_dict_unscaled_all_models': coef_dict_unscaled_all_models
+                    'coef_dict_unscaled_all_models': coef_dict_unscaled_all_models,
                 },
                 'insights': {
                     'coefficient-insights': coefficients_insights,
@@ -289,36 +295,27 @@ class Analyzer:
     def plot(self):
         self._check_fitted()
         
-        # self.performance_plot.plot(
-        #     performance_analysis_result=self.results['metrics']['values']['mse']
-        # )
+        self.performance_plot.plot(
+            performance_analysis_result=self.results['metrics']['values']['mse']
+        )
         
-        # self.convergence_plot.plot(
-        #     convergence_history=self.results['convergence']['values']['cost-history-scaled'],
-        #     model_name='Gradient Descent'
-        # )
+        self.convergence_plot.plot(
+            convergence_history=self.results['convergence']['values']['cost-history-scaled'],
+            model_name='Gradient Descent'
+        )
         
-        # self.coefficient_plot.plot(
-        #     coef_dict=self.results['coefficients']['values']['coef_dict_unscaled_all_models']
-        # )
+        self.coefficient_plot.plot(
+            coef_dict=self.results['coefficients']['values']['coef_dict_unscaled_all_models']
+        )
         
-        # self.correlation_plot.plot(
-        #     corr_matrix=self.results['multicollinearity']['values']
-        # )
+        self.correlation_plot.plot(
+            corr_matrix=self.results['multicollinearity']['values']
+        )
         
-        # self.residuals_plot.plot(
-        #     self.model_results['OLS']['actual'], self.model_results['OLS']['predicted'], model_name="Linear Regression"
-        # )
+        self.residuals_plot.plot(
+            self.model_results['OLS']['actual'], self.model_results['OLS']['predicted'], model_name="Linear Regression"
+        )
         
-        
-        
-from sklearn.datasets import fetch_california_housing
-
-housing = fetch_california_housing(as_frame=True)
-
-target = housing.frame.columns.to_list()[-1]
-data = housing.frame
-
-analyzer = Analyzer()
-analyzer.run(data, target)
-analyzer.plot()
+        self.sensitivity_plot.plot_mse(
+            self.mse_gd
+        )
