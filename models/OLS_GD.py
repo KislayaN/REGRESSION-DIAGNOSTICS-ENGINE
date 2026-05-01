@@ -25,16 +25,19 @@ class OLS_Grad:
         self.weights = np.zeros(p)
         y = np.asarray(y_val).reshape(-1)
         
+        max_float = np.finfo(np.float64).max
+        limit = np.sqrt(max_float / n)
+        
         for epoch in range(self.n_iter):
             self.max_epochs = epoch
             prediction = X_val @ self.weights
             error = prediction - y
             
-            cost = (1/n) * np.sum(error ** 2)
-            
-            if not np.isfinite(cost):
+            if np.any(np.abs(error) > limit):
                 self.is_diverged = True
                 break
+            
+            cost = (1/n) * np.sum(error ** 2)
             
             self.cost_history.append(cost)
             
