@@ -216,7 +216,9 @@ class Analyzer:
 
         # Sensitivity 
         coef_scaled_data_dict = dict(zip(loader.feature_names, ols_gd.coefficients))
+        coef_scaled_data_dict = dict(sorted(coef_scaled_data_dict.items(), key=lambda item: item[1], reverse=True))
         coef_unscaled_data_dict = dict(zip(loader.feature_names, ols_gd_unscaled.coefficients))
+        coef_unscaled_data_dict = dict(sorted(coef_unscaled_data_dict.items(), key=lambda item: item[1], reverse=True))
         top_feat_dict = {
             'unscaled': coef_unscaled_data_dict,
             'scaled': coef_scaled_data_dict
