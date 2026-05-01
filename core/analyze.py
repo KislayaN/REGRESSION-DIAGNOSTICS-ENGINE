@@ -212,7 +212,7 @@ class Analyzer:
             'scaled': coef_scaled_data_dict
         }
         # Analysis
-        strong_features = self.sensitivity.check_coefficients(coefficients_dict=top_feat_dict, top_features=3)
+        self.strong_features = self.sensitivity.check_coefficients(coefficients_dict=top_feat_dict, top_features=3)
 
         all_insights = []
 
