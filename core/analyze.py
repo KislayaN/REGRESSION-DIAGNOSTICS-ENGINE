@@ -157,19 +157,19 @@ class Analyzer:
         r2_ridge_test = self.metrics.r2(y_test, y_pred_ridge)
         
         mse_test_dict = {
-            'MSE OLS': mse_ols_test,
-            'MSE Gradient descent': mse_gd_test,
-            'MSE Linear regression': mse_lr_test,
-            'MSE Lasso': mse_lasso_test,
-            'MSE Ridge': mse_ridge_test
+            'OLS': mse_ols_test,
+            'Gradient descent': mse_gd_test,
+            'Linear regression': mse_lr_test,
+            'Lasso': mse_lasso_test,
+            'Ridge': mse_ridge_test
         }
 
         r2_test_dict = {
-            'R2 OLS': r2_ols_test,
-            'R2 Gradient descent': r2_gd_test,
-            'R2 Linear regression': r2_lr_test,
-            'R2 Lasso': r2_lasso_test,
-            'R2 Ridge': r2_ridge_test
+            'OLS': r2_ols_test,
+            'Gradient descent': r2_gd_test,
+            'Linear regression': r2_lr_test,
+            'Lasso': r2_lasso_test,
+            'Ridge': r2_ridge_test
         }
 
         # Performance
