@@ -4,7 +4,9 @@ class Performance_plot:
     def __init__(self):
         self.perf_result = None
         
-    def plot(self, performance_analysis_result):
+    def plot(self, performance_analysis_result=None):
+        if performance_analysis_result is None:
+            raise ValueError("performance_analysis_result can not be none")
         self.performance_result = performance_analysis_result
         models = self.performance_result.keys()
         mse_vals = self.performance_result.values()

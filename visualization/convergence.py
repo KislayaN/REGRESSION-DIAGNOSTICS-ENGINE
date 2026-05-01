@@ -7,7 +7,9 @@ class Convergence_plot:
         self.model_obj = None
         self.model_name = None
         
-    def plot(self, convergence_history, model_name):
+    def plot(self, convergence_history=None, model_name=''):
+        if convergence_history is None:
+            raise ValueError("convergence_history can not be none")
         self.model_name = model_name
         self.cost_history = convergence_history
         

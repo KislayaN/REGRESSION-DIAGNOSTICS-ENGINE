@@ -4,7 +4,7 @@ class Coefficient_plot:
     def __init__(self):
         pass
     
-    def plot(self, coef_dict):
+    def plot(self, coef_dict=None):
         """
         coef_dict: {
             ols: [values],
@@ -14,6 +14,9 @@ class Coefficient_plot:
             gd_ols: [values]
         }
         """
+        if coef_dict is None:
+            raise ValueError("mse_dict can not be none")
+        
         if len(coef_dict) != 5:
             raise ValueError("Exactly 5 Models are required for coefficients plot")
     
