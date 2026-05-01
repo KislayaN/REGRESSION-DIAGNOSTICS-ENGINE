@@ -13,6 +13,9 @@ class Multicollinearity:
         pairs = upper.stack()
         
         strong_pairs = pairs[pairs > threshold]
+        if strong_pairs == []:
+            raise ValueError("Try reducing threhold, there are no features above this threshold")
+        
         pairs_index = [idx for idx in strong_pairs.index[0]]
         self.insights.append(f"{pairs_index[0]} and {pairs_index[1]} are highly correlated with each other")
         
