@@ -12,6 +12,7 @@ if project_root not in sys.path:
 from data.load_data import Load_data
 from helpers.validate import Validate
 from helpers.sanity_check import Sanity_Check
+from helpers.handle_missing_values import Imputer
 from train_test_split.split import Splitter
 from feature_scaling.preprocessing import Preprocessor
 # Importing models
@@ -39,6 +40,7 @@ from visualization.sensitivity import Sensitivity_plot
 
 class Analyzer: 
     def __init__(self, show_plots = True):
+        self.imputer = Imputer()
         self.splitter = Splitter()
         self.preprocessor = Preprocessor(perform_scaling=True)
         self.metrics = Get_metrics()
@@ -71,6 +73,14 @@ class Analyzer:
         
         # Train test split
         X_train, X_test, y_train, y_test = self.splitter.split(loader.X_df, loader.y_df)
+        
+        # Imputing if missing values exist
+        if X_train.isna().sum().sum() > 0:
+            self.imputer.fit(X_train)
+            self.imputer.transform(X_train)
+            
+        if X_train.isna().sum().sum() > 0:
+            X_test = self.imputer.transform(X_test)
         
         # Scaler 
         self.preprocessor.fit(X_train)
